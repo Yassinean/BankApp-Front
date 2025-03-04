@@ -1,4 +1,5 @@
 import axios from "axios";
+import { log } from "console";
 
 const API_BASE_URL = "http://localhost:8080";
 
@@ -11,6 +12,14 @@ const api = axios.create({
 
 export const getCustomers = async () => {
     const response = await api.get("/customer-service/customers");
+    console.log("all::"+response.data);
+    
+    return response.data;
+};
+export const getCustomerById = async (id : number) => {
+    const response = await api.get(`/customer-service/customers/${id}`);
+    console.log("all::"+response.data);
+    
     return response.data;
 };
 

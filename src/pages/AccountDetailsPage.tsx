@@ -3,21 +3,27 @@
 import type React from "react"
 import { useEffect, useState } from "react"
 import { useParams, useNavigate } from "react-router-dom"
-import { getAccountById } from "../services/api"
+import { getAccountById, getCustomerById } from "../services/api"
 import { Container, Paper, Typography, Button, Grid } from "@mui/material"
 import { ArrowLeft, CreditCard, User, Mail, Wallet } from "lucide-react"
 
 interface Account {
     id: number
     type: string
-    solde: number
+    balance: number
     clientName: string
     clientEmail: string
+}
+
+interface Customer{
+    name : string,
+    email:string
 }
 
 const AccountDetailsPage: React.FC = () => {
     const { accountId } = useParams<{ accountId: string }>()
     const [account, setAccount] = useState<Account | null>(null)
+    const [customerInfo , setCustomerInfo] = useState<Customer>({name:'',email:''})
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -29,6 +35,10 @@ const AccountDetailsPage: React.FC = () => {
     const fetchAccountDetails = async (id: number) => {
         try {
             const data = await getAccountById(id)
+            if(data){
+                const customer = await getCustomerById(data.clientId)
+                setCustomerInfo(customer)
+            }
             setAccount(data)
         } catch (error) {
             console.error("Failed to fetch account details:", error)
@@ -91,7 +101,7 @@ const AccountDetailsPage: React.FC = () => {
                                     <Typography variant="subtitle2">Client Name</Typography>
                                 </div>
                                 <Typography variant="h6" className="font-semibold">
-                                    {account.clientName}
+                                    {customerInfo.name}
                                 </Typography>
                             </div>
                         </Grid>
@@ -103,7 +113,7 @@ const AccountDetailsPage: React.FC = () => {
                                     <Typography variant="subtitle2">Client Email</Typography>
                                 </div>
                                 <Typography variant="h6" className="font-semibold">
-                                    {account.clientEmail}
+                                {customerInfo.email}
                                 </Typography>
                             </div>
                         </Grid>
@@ -114,7 +124,7 @@ const AccountDetailsPage: React.FC = () => {
                                     Current Balance
                                 </Typography>
                                 <Typography variant="h3" className="text-center font-bold text-primary">
-                                    €{account.solde.toFixed(2)}
+                                    €{account.balance.toFixed(2)}
                                 </Typography>
                             </div>
                         </Grid>

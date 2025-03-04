@@ -13,13 +13,13 @@ interface AccountFormProps {
 
 interface Client {
   id: number;
-  nom: string;
+  name: string;
 }
 
 const validationSchema = Yup.object({
   clientId: Yup.number().required("Client ID is required"),
   type: Yup.string().required("Account type is required"),
-  solde: Yup.number()
+  balance: Yup.number()
     .required("Balance is required")
     .min(0, "Balance must be positive"),
 });
@@ -36,7 +36,7 @@ const AccountForm: React.FC<AccountFormProps> = ({ onSubmit }) => {
     try {
       const data = await getCustomers();
       // Assuming the clients are inside _embedded.customers
-      const clientsData = data?._embedded?.customers || [];
+      const clientsData = data || [];
       setClients(clientsData); // Set the clients array to state
       console.log("Fetched clients:", clientsData);
     } catch (error) {
@@ -53,7 +53,7 @@ const AccountForm: React.FC<AccountFormProps> = ({ onSubmit }) => {
       const accountData = {
         clientId: Number(values.clientId),
         type: values.type,
-        solde: Number(values.solde),
+        balance: Number(values.balance),
       };
       const createdAccount = await createAccount(accountData);
       resetForm();
@@ -70,7 +70,7 @@ const AccountForm: React.FC<AccountFormProps> = ({ onSubmit }) => {
 
   return (
     <Formik
-      initialValues={{ clientId: "", type: "", solde: "" }}
+      initialValues={{ clientId: "", type: "", balance: "" }}
       validationSchema={validationSchema}
       onSubmit={handleSubmit}
     >
@@ -107,11 +107,11 @@ const AccountForm: React.FC<AccountFormProps> = ({ onSubmit }) => {
               <option value="">Select a client</option>
               {clients.map((client) => (
                 <option
-                  key={client.id || client.nom}
+                  key={client.id || client.name}
                   value={client.id}
                   className="text-gray-900 dark:text-gray-300"
                 >
-                  {client.nom}
+                  {client.name}
                 </option>
               ))}
             </Field>
@@ -156,22 +156,22 @@ const AccountForm: React.FC<AccountFormProps> = ({ onSubmit }) => {
           </div>
           <div>
             <label
-              htmlFor="solde"
+              htmlFor="balance"
               className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
             >
               Balance
             </label>
             <Field
               type="number"
-              id="solde"
-              name="solde"
+              id="balance"
+              name="balance"
               className={`mt-1 block w-full px-3 py-2 border ${
-                errors.solde && touched.solde
+                errors.balance && touched.balance
                   ? "border-red-500"
                   : "border-gray-300"
               } rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition duration-150 ease-in-out`}
             />
-            <ErrorMessage name="solde">
+            <ErrorMessage name="balance">
               {(msg) => (
                 <div className="mt-1 flex items-center text-sm text-red-600">
                   <AlertCircle className="h-4 w-4 mr-1" />

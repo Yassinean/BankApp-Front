@@ -10,7 +10,7 @@ interface CustomerFormProps {
 }
 
 const validationSchema = Yup.object({
-    nom: Yup.string().required("Name is required").min(2, "Name must be at least 2 characters"),
+    name: Yup.string().required("Name is required").min(2, "Name must be at least 2 characters"),
     email: Yup.string().email("Invalid email address").required("Email is required"),
 })
 
@@ -28,24 +28,24 @@ const CustomerForm: React.FC<CustomerFormProps> = ({ onSubmit }) => {
     }
 
     return (
-        <Formik initialValues={{ nom: "", email: "" }} validationSchema={validationSchema} onSubmit={handleSubmit}>
+        <Formik initialValues={{ name: "", email: "" }} validationSchema={validationSchema} onSubmit={handleSubmit}>
             {({ errors, touched }) => (
                 <Form className="space-y-6 bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg">
                     <h2 className="text-3xl font-extrabold text-gray-900 dark:text-white mb-6 font-serif">Create New Client</h2>
 
                     <div>
-                        <label htmlFor="nom" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                             Name
                         </label>
                         <Field
                             type="text"
-                            id="nom"
-                            name="nom"
+                            id="name"
+                            name="name"
                             className={`mt-1 block w-full px-3 py-2 border ${
-                                errors.nom && touched.nom ? "border-red-500" : "border-gray-300"
+                                errors.name && touched.name ? "border-red-500" : "border-gray-300"
                             } rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition duration-150 ease-in-out`}
                         />
-                        <ErrorMessage name="nom">
+                        <ErrorMessage name="name">
                             {(msg) => (
                                 <div className="mt-1 flex items-center text-sm text-red-600">
                                     <AlertCircle className="h-4 w-4 mr-1" />

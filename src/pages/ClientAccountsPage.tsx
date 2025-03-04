@@ -21,7 +21,7 @@ import { Eye, ArrowLeft } from "lucide-react"
 interface Account {
     id: number
     type: string
-    solde: number
+    balance: number
 }
 
 const ClientAccountsPage: React.FC = () => {
@@ -72,7 +72,7 @@ const ClientAccountsPage: React.FC = () => {
                             <TableRow key={account.id} className="hover:bg-muted/50">
                                 <TableCell>{account.id}</TableCell>
                                 <TableCell>{account.type}</TableCell>
-                                <TableCell>€{account.solde.toFixed(2)}</TableCell>
+                                <TableCell>€{account.balance.toFixed(2)}</TableCell>
                                 <TableCell>
                                     <button
                                         onClick={() => navigate(`/account/${account.id}`)}
@@ -91,4 +91,3 @@ const ClientAccountsPage: React.FC = () => {
 }
 
 export default ClientAccountsPage
-

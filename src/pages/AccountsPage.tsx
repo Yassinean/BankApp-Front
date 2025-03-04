@@ -9,13 +9,13 @@ import { getAccountsByClientId, getCustomers } from "../services/api"
 
 interface Customer {
     id: number
-    nom: string
+    name: string
     email: string
 }
 interface Account {
     id: number
     type: string
-    solde: number
+    balance: number
     clientId: number
 }
 
@@ -26,6 +26,7 @@ const AccountsPage: React.FC = () => {
     const [loading, setLoading] = useState(true)
     const [successMessage, setSuccessMessage] = useState<string | null>(null)
     const navigate = useNavigate()
+   
 
     // Fetch customers when the component mounts
     useEffect(() => {
@@ -75,7 +76,7 @@ const AccountsPage: React.FC = () => {
     // Find customer name by ID
     const getCustomerName = (clientId: number) => {
         const customer = customers.find((c) => c.id === clientId)
-        return customer ? customer.nom : "Unknown"
+        return customer ? customer.name : "Unknown"
     }
 
     return (
@@ -143,7 +144,7 @@ const AccountsPage: React.FC = () => {
                                             {account.type}
                                         </div>
                                     </td>
-                                    <td className="py-2 px-4 font-medium">€{account.solde.toFixed(2)}</td>
+                                    <td className="py-2 px-4 font-medium">€{account.balance.toFixed(2)}</td>
                                     <td className="py-2 px-4">
                                         <div className="flex items-center gap-2">
                                             <User className="h-4 w-4 text-[hsl(var(--primary))]" />

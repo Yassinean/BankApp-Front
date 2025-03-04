@@ -1,7 +1,6 @@
 "use client"
 
-import type React from "react"
-import { useState, useEffect } from "react"
+import React, { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { Eye, Plus, User, Mail } from "lucide-react"
 import CustomerForm from "../components/CustomerForm"
@@ -9,7 +8,7 @@ import { createCustomer, getCustomers } from "../services/api"
 
 interface Customer {
     id: number
-    nom: string
+    name: string
     email: string
 }
 
@@ -18,35 +17,26 @@ const ClientsPage: React.FC = () => {
     const [loading, setLoading] = useState(true)
     const [isFormVisible, setIsFormVisible] = useState(false)
     const [successMessage, setSuccessMessage] = useState<string | null>(null)
+    const [errorMessage, setErrorMessage] = useState<string | null>(null)
     const navigate = useNavigate()
-
-    useEffect(() => {
-        fetchCustomers().then(r => console.log("Customers fetched"))
-    }, [])
 
     const fetchCustomers = async () => {
         try {
             setLoading(true)
             const data = await getCustomers()
-            console.log("Fetched customers:", data)  // Log the data to check what it is
-
-            const customersData = data?._embedded?.customers || []
-            setCustomers(customersData)
-            
-            // Check if the fetched data is an array
-            // if (Array.isArray(data)) {
-            //     setCustomers(data)
-            // } else {
-            //     // If it's not an array, reset to an empty array
-            //     setCustomers([])
-            //     console.error("Fetched data is not an array:", data)
-            // }
+            const customersData = data || []
+            setCustomers(customersData) 
         } catch (error) {
             console.error("Failed to fetch customers:", error)
+            setErrorMessage("Error fetching customers.")
         } finally {
             setLoading(false)
         }
     }
+
+    useEffect(() => {
+        fetchCustomers()
+    }, [])
 
     const handleCreateCustomer = async (customerData: any) => {
         try {
@@ -57,6 +47,8 @@ const ClientsPage: React.FC = () => {
             setTimeout(() => setSuccessMessage(null), 6000)
         } catch (error) {
             console.error("Failed to create customer:", error)
+            setErrorMessage("Error creating client.")
+            setTimeout(() => setErrorMessage(null), 6000)
         }
     }
 
@@ -98,59 +90,65 @@ const ClientsPage: React.FC = () => {
                 </div>
             )}
 
-            <div className="bg-[hsl(var(--card))] p-6 rounded-xl shadow-lg border border-[hsl(var(--border))]">
-                {loading ? (
-                    <div className="flex justify-center items-center min-h-[200px]">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[hsl(var(--primary))]"></div>
+            {errorMessage && (
+                <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded shadow-md">
+                    <div className="flex items-center">
+                        <div className="py-1">
+                            <svg
+                                className="fill-current h-6 w-6 text-red-500 mr-4"
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 20 20"
+                            >
+                                <path d="M10 2a8 8 0 0 0-8 8 8 8 0 1 0 16 0 8 8 0 0 0-8-8zM9 6h2v2H9V6zm0 4h2v6H9v-6z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <p className="font-bold">{errorMessage}</p>
+                        </div>
                     </div>
-                ) : (
-                    <div className="overflow-x-auto">
-                        <table className="w-full">
-                            <thead>
+                </div>
+            )}
+
+            <div className="bg-[hsl(var(--card))] p-6 rounded-xl shadow-lg border border-[hsl(var(--border))]">
+                <div className="overflow-x-auto">
+                    <table className="w-full">
+                        <thead>
                             <tr className="border-b border-[hsl(var(--border))]">
                                 <th className="py-2 px-4 text-left">ID</th>
                                 <th className="py-2 px-4 text-left">Name</th>
                                 <th className="py-2 px-4 text-left">Email</th>
                                 <th className="py-2 px-4 text-left">Actions</th>
                             </tr>
-                            </thead>
-                            <tbody>
-                            {customers.length > 0 ? (
+                        </thead>
+                        <tbody>
+                            {loading ? (
+                                <tr>
+                                    <td colSpan={4} className="py-2 px-4 text-center">Loading...</td>
+                                </tr>
+                            ) : customers.length === 0 ? (
+                                <tr>
+                                    <td colSpan={4} className="py-2 px-4 text-center">No customers available</td>
+                                </tr>
+                            ) : (
                                 customers.map((customer) => (
                                     <tr key={customer.id} className="hover:bg-[hsl(var(--muted))]">
                                         <td className="py-2 px-4">{customer.id}</td>
-                                        <td className="py-2 px-4">
-                                            <div className="flex items-center gap-2">
-                                                <User className="h-4 w-4 text-[hsl(var(--primary))]" />
-                                                {customer.nom}
-                                            </div>
-                                        </td>
-                                        <td className="py-2 px-4">
-                                            <div className="flex items-center gap-2">
-                                                <Mail className="h-4 w-4 text-[hsl(var(--primary))]" />
-                                                {customer.email}
-                                            </div>
-                                        </td>
+                                        <td className="py-2 px-4">{customer.name}</td>
+                                        <td className="py-2 px-4">{customer.email}</td>
                                         <td className="py-2 px-4">
                                             <button
-                                                onClick={() => navigate(`/accounts/${customer.id}`)}
-                                                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[hsl(var(--primary))]/10 hover:bg-[hsl(var(--primary))]/20 text-[hsl(var(--primary))] transition-all duration-300"
+                                                onClick={() => navigate(`/customer/${customer.id}`)}
+                                                className="p-2 hover:bg-[hsl(var(--primary))] hover:bg-opacity-10 rounded-full transition-colors"
                                             >
-                                                <Eye className="h-4 w-4" />
-                                                <span>View Accounts</span>
+                                                <Eye className="h-5 w-5 text-[hsl(var(--primary))]" />
                                             </button>
                                         </td>
                                     </tr>
                                 ))
-                            ) : (
-                                <tr>
-                                    <td colSpan={4} className="py-2 px-4 text-center">No customers found</td>
-                                </tr>
                             )}
-                            </tbody>
-                        </table>
-                    </div>
-                )}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     )
